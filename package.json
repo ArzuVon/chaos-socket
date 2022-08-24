@@ -1,0 +1,19 @@
+{
+  "name": "chaos-socket",
+  "version": "1.0.0",
+  "description": "Event Driven Server for Catastrophe Corp",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catastrophe-corp/chaos-socket.git"
+  },
+  "author": "Von Arzu, Derek Douglas, Jim Doyle, Justin Mathieu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/catastrophe-corp/chaos-socket/issues"
+  },
+  "homepage": "https://github.com/catastrophe-corp/chaos-socket#readme"
+}
