@@ -2,8 +2,8 @@ const socketIo = require('socket.io');
 const chance = require('chance');
 const Chance = new chance();
 const { throws } = require('assert');
-
-const catastropeCorp = socketIo(1963);
+const environment = require('./environment.js')
+const catastropheCorp = socketIo(1963);
 
 // Array contains survivor and environment module sockets
 const allClients = [];
@@ -32,25 +32,44 @@ const catastropheList = [
 
 // console.log(catastropheList);
 
-function incomingCatastophe() {
+function outgoingCatastrophe() {
     return Chance.pickset(catastropheList)
 }
-const test = incomingCatastophe();
-console.log(test);
+// const test = outgoingCatastrophe();
+// console.log(test);
 
-catastropeCorp.on('connection', (client) => {
+catastropheCorp.on('connection', (client) => {
     allClients.push(client);
+    // client.join('Panic Room');
+});
 
-    client.on('', (order) => {
-        catastropeCorp.emit('', (order));
-    });
-    client.on('', (order) => {
-        catastropeCorp.emit('', (order));
-    });
-    client.on('', (order) => {
-        catastropeCorp.emit('', (order));
-    });
-    client.on('', (order) => {
-        catastropeCorp.emit('', (order));
-    });
-})
+setInterval(() => {
+    catastropheCorp.to('Panic Room').emit('catastrophe', () => {
+        const catastrophe = outgoingCatastrophe();
+        console.log('Catastrophe:', catastrophe);
+        console.log('Warning:', catastrophe[0].warning);
+    }), 8000
+});
+
+
+
+// client.on('', (order) => {
+//     catastropheCorp.emit('', (order));
+// });
+// client.on('', (order) => {
+//     catastropheCorp.emit('', (order));
+// });
+// client.on('', (order) => {
+//     catastropheCorp.emit('', (order));
+// });
+
+// catastropheCorp.emit('catastrophe', () => {
+//     const catastrophe = outgoingCatastrophe();
+//     console.log('Catastrophe:', catastrophe);
+//     console.log('Warning:', catastrophe[0].warning);
+// });
+
+
+module.exports = {
+
+}

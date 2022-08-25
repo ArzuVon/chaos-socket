@@ -3,11 +3,12 @@ const survivor = io("ws://localhost:1963");
 const chance = require('chance');
 const Chance = new chance();
 
+
 let survivorArr = [];
 
 // Blueprint for survivor object
 class Survivor {
-  constructor(profession, strength, agility, intelligence, health, name, status) {
+  constructor(profession, strength, agility, intelligence, health, name, status, environment) {
     this.profession = profession;
     this.strength = strength;
     this.agililty = agility;
@@ -15,6 +16,7 @@ class Survivor {
     this.health = health;
     this.name = name;
     this.status = status;
+    this.environment = environment;
   }
 }
 
@@ -24,23 +26,30 @@ function generateSurvivors(n) {
     const survivor = new Survivor(
       this.name = Chance.name(),
       this.profession = Chance.profession(),
-      this.strength = Chance.natural({ min: 0, max: 10 }),
-      this.agility = Chance.natural({ min: 0, max: 10 }),
-      this.intelligence = Chance.natural({ min: 0, max: 10 }),
-      this.health = Chance.natural({ min: 0, max: 10 }),
+      this.strength = Chance.natural({ min: 1, max: 10 }),
+      this.agility = Chance.natural({ min: 1, max: 10 }),
+      this.intelligence = Chance.natural({ min: 1, max: 10 }),
+      this.health = Chance.natural({ min: 1, max: 10 }),
       this.status = 'Alive',
     );
-    survivorArr.push(survivor);
+    survivorArr.push(survivor)
   }
 } generateSurvivors(2);
 console.log("----------->", survivorArr);
 
-// survivor stat check
+// survivor stat check. if all fail, take full damage. If all pass, all stats up one and health up 3. if some pass, no change to health, all stats up one.
 async function skillCheck (survivor, catastrophe){
     if (survivor.strength < catastrophe.strReq && survivor.agility < catastrophe.dexReq && survivor.intelligence < catastrophe.intReq){
         takesDamage(survivor, catastrophe.damage);
-    } else if(survivor.strength > catastrophe.strReq && survivor.agility > catastrophe.){
-
+    } else if(survivor.strength > catastrophe.strReq && survivor.agility > catastrophe.dexReq && survivor.intelligence > catastrophe.intReq){
+        survivor.strength++;
+        survivor.agility++;
+        survivor.intelligence++;
+        survivor.health = survivor.health + 3;
+    }else {
+        survivor.strength++;
+        survivor.agility++;
+        survivor.intelligence++;
     }
 }
 
@@ -59,16 +68,18 @@ async function takesDamage(survivor, damage) {
   };
 };
 
-survivor.on('takes damage', (survivor) => {
-  let status = takesDamage(survivor);
+
+survivor.on('catastrophe', (survivor) => {
+  survivor.join('Panic Room');
+  let status = takesDamage(survivor, damage);
   survivor.emit('survivor status', (status));
 });
-survivor.on('', (order) => {
-  survivor.emit('', (order));
-});
-survivor.on('', (order) => {
-  survivor.emit('', (order));
-});
-survivor.on('', (order) => {
-  survivor.emit('', (order));
-});
+// survivor.on('', (order) => {
+//   survivor.emit('', (order));
+// });
+// survivor.on('', (order) => {
+//   survivor.emit('', (order));
+// });
+// survivor.on('', (order) => {
+//   survivor.emit('', (order));
+// });
