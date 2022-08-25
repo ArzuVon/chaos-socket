@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/catastrophe-corp/chaos-socket/issues"
   },
-  "homepage": "https://github.com/catastrophe-corp/chaos-socket#readme"
+  "homepage": "https://github.com/catastrophe-corp/chaos-socket#readme",
+  "dependencies": {
+    "chance": "^1.1.8",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1"
+  }
 }
