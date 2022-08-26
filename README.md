@@ -34,3 +34,10 @@ function environmentGenerator() {
 ```
 
 ## Sources
+
+## TODO from 8/25
+- send catastrophe from catastrophe corp to environment
+- in environment, alter the damage of the catastrophe if appropriate. Send back to catastrophe corp
+- From catastrophe corp, emit the modified catastrophe to survivors.
+- apply damage from modified catastrophe to survivors in survivor.js, with dead survivors being removed from survivor array.
+- send the final array from survivor.js to catastrophe corp.

@@ -34,7 +34,7 @@ function generateSurvivors(n) {
     );
     survivorArr.push(survivor)
   }
-} generateSurvivors(2);
+};
 console.log("----------->", survivorArr);
 
 // survivor stat check. if all fail, take full damage. If all pass, all stats up one and health up 3. if some pass, no change to health, all stats up one.
@@ -69,8 +69,15 @@ async function takesDamage(survivor, damage) {
 };
 
 
+// generate survivors
+survivor.on('connect', () => {
+  generateSurvivors(2);
+  survivor.emit("waitingOnFeedback", survivorArr, console.log('Survivors connected and waiting on CatCorp'));
+});
+
 survivor.on('catastrophe', (survivor) => {
-  survivor.join('Panic Room');
+  // survivor.join('Panic Room');
+  console.log('---> catastrophe hits survivors', survivor, damage)
   let status = takesDamage(survivor, damage);
   survivor.emit('survivor status', (status));
 });

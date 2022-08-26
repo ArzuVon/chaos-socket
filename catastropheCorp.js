@@ -2,11 +2,14 @@ const socketIo = require('socket.io');
 const chance = require('chance');
 const Chance = new chance();
 const { throws } = require('assert');
-const environment = require('./environment.js')
 const catastropheCorp = socketIo(1963);
 
 // Array contains survivor and environment module sockets
 const allClients = [];
+
+
+// implement state for survivor stats here.
+
 
 // Object blueprint for generating catastrophes
 class Catastrophe {
@@ -40,36 +43,18 @@ function outgoingCatastrophe() {
 
 catastropheCorp.on('connection', (client) => {
     allClients.push(client);
-    // client.join('Panic Room');
-});
 
-setInterval(() => {
-    catastropheCorp.to('Panic Room').emit('catastrophe', () => {
+    client.on('waitingOnFeedback', (survivors) => {
         const catastrophe = outgoingCatastrophe();
         console.log('Catastrophe:', catastrophe);
         console.log('Warning:', catastrophe[0].warning);
-    }), 8000
+    ;
+    });
+    client.on('environmentConnected', () => {
+catastropheCorp.emit('catastrophe', catastrophe.damage, console.log('----->Survivors hit for damage'));
+    });
 });
 
+// module.exports = {
 
-
-// client.on('', (order) => {
-//     catastropheCorp.emit('', (order));
-// });
-// client.on('', (order) => {
-//     catastropheCorp.emit('', (order));
-// });
-// client.on('', (order) => {
-//     catastropheCorp.emit('', (order));
-// });
-
-// catastropheCorp.emit('catastrophe', () => {
-//     const catastrophe = outgoingCatastrophe();
-//     console.log('Catastrophe:', catastrophe);
-//     console.log('Warning:', catastrophe[0].warning);
-// });
-
-
-module.exports = {
-
-}
+// }
