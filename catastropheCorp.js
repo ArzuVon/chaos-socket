@@ -6,8 +6,12 @@ const catastropheCorp = socketIo(1963);
 
 // Array contains survivor and environment module sockets
 const allClients = [];
-
-
+let currentCatastrophe = {};
+// TODO: catastrophe ID / timestamp
+let catastropheHistory = [];
+let survivorArr=[];
+let deceasedArr=[];
+let catastropheCounter = 0;
 // implement state for survivor stats here.
 
 
@@ -44,17 +48,41 @@ function outgoingCatastrophe() {
 catastropheCorp.on('connection', (client) => {
     allClients.push(client);
 
-    client.on('waitingOnFeedback', (survivors) => {
+    client.on('waitingOnFeedback', () => {
         const catastrophe = outgoingCatastrophe();
-        console.log('Catastrophe:', catastrophe);
+        console.log('catastrophe:', catastrophe);
+        currentCatastrophe = catastrophe[0];
+        console.log('currentCatastrophe:', currentCatastrophe);
         console.log('Warning:', catastrophe[0].warning);
-    ;
+        console.log('Catastrophe:', catastrophe);
     });
     client.on('environmentConnected', () => {
-catastropheCorp.emit('catastrophe', catastrophe.damage, console.log('----->Survivors hit for damage'));
+        let catastrophe = currentCatastrophe;
+        console.log('------>catastrophe and env connected', catastrophe);
+        catastropheCorp.emit('catastrophe', catastrophe, console.log("------> CurrentCat Damage", catastrophe));
     });
+    client.on('envModifiesCatastrophe', (catastrophe) => {
+        catastropheHistory.push(catastrophe);
+        // console.log('catastropheHistory:', catastropheHistory);
+        catastropheCorp.emit("modifiedDamageToSurvivors", catastrophe);
+    });
+    client.on('survivor status', (survivorArr, deceasedArr) => {
+        survivorArr = survivorArr;
+        deceasedArr = deceasedArr;
+        // console.log('final survivors:', survivorArr);
+        // console.log('final losses', deceasedArr);
+        // run until only one survivor
+        while(catastropheCounter < 10){
+            catastropheCounter++;
+            catastropheHistory.push(currentCatastrophe);
+            currentCatastrophe = outgoingCatastrophe();
+            console.log('catastrophe history:', catastropheHistory.length);
+            catastropheCorp.emit('catastrophe', currentCatastrophe[0]);
+        }
+        //if no survivors left, break.
+        // else if(survivorArr.length=0){
+
+        // }
+
+    })
 });
-
-// module.exports = {
-
-// }

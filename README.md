@@ -43,3 +43,30 @@ function environmentGenerator() {
 - From catastrophe corp, emit the modified catastrophe to survivors.
 - apply damage from modified catastrophe to survivors in survivor.js, with dead survivors being removed from survivor array.
 - send the final array from survivor.js to catastrophe corp.
+
+### Post Project Idea, create a catastrophe ID/ timestamp, SAMPLE
+
+```
+const withTimeout = (onSuccess, onTimeout, timeout) => {
+  let called = false;
+
+  const timer = setTimeout(() => {
+    if (called) return;
+    called = true;
+    onTimeout();
+  }, timeout);
+
+  return (...args) => {
+    if (called) return;
+    called = true;
+    clearTimeout(timer);
+    onSuccess.apply(this, args);
+  }
+}
+
+socket.emit("hello", 1, 2, withTimeout(() => {
+  console.log("success!");
+}, () => {
+  console.log("timeout!");
+}, 1000));
+```

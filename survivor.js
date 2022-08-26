@@ -5,18 +5,19 @@ const Chance = new chance();
 
 
 let survivorArr = [];
+let deceasedArr = [];
 
 // Blueprint for survivor object
 class Survivor {
-  constructor(profession, strength, agility, intelligence, health, name, status, environment) {
+  constructor(name, profession, strength, agility, intelligence, health, status) {
+    this.name = name;
     this.profession = profession;
     this.strength = strength;
-    this.agililty = agility;
+    this.agility = agility;
     this.intelligence = intelligence;
     this.health = health;
-    this.name = name;
+
     this.status = status;
-    this.environment = environment;
   }
 }
 
@@ -38,9 +39,10 @@ function generateSurvivors(n) {
 console.log("----------->", survivorArr);
 
 // survivor stat check. if all fail, take full damage. If all pass, all stats up one and health up 3. if some pass, no change to health, all stats up one.
-async function skillCheck (survivor, catastrophe){
+async function skillCheck (catastrophe){
+  survivorArr.forEach(survivor => {
     if (survivor.strength < catastrophe.strReq && survivor.agility < catastrophe.dexReq && survivor.intelligence < catastrophe.intReq){
-        takesDamage(survivor, catastrophe.damage);
+        takesDamage(survivor, catastrophe);
     } else if(survivor.strength > catastrophe.strReq && survivor.agility > catastrophe.dexReq && survivor.intelligence > catastrophe.intReq){
         survivor.strength++;
         survivor.agility++;
@@ -51,35 +53,49 @@ async function skillCheck (survivor, catastrophe){
         survivor.agility++;
         survivor.intelligence++;
     }
+  })
+  deceasedArr = survivorArr.filter(survivor=> survivor.status === "Dead");
+  survivorArr = survivorArr.filter(survivor=> survivor.status === "Alive");
 }
 
 // Survivors takes damage. If health drops below zero, survivor dies. If health drops and survivor survives, survivor gains 1 to each stat.
-async function takesDamage(survivor, damage) {
-  for (let i = 0; i < survivorArr.length; i++) {
-    survivorArr[i].health = survivorArr[i].health - damage;
-    if (survivorArr[i] <= 0) {
-      survivorArr[i].slice[i];
-      console.log(`Survivor ${survivorArr[i].name} didn't survive`)
-    } else {
-      survivorArr[i].strength = survivorArr[i].strength + 1;
-      survivorArr[i].agililty = survivorArr[i].agililty + 1;
-      survivorArr[i].intelligence = survivorArr[i].intelligence + 1;
-    };
-  };
-};
+ function takesDamage(survivor, catastrophe) {
+   survivor.health = survivor.health - catastrophe.damage;
+   if(survivor.health <= 0){
+    survivor.status = 'Deceased';
+   }
+  }
+// {
+//   for (let i = 0; i < survivorArr.length; i++) {
+//     survivorArr[i].health = survivorArr[i].health - damage;
+//     if (survivorArr[i] <= 0) {
+//       survivorArr.splice(i, 0);
+//       console.log(`Survivor ${survivorArr[i].name} didn't survive`)
+//     } else {
+//       survivorArr[i].strength = survivorArr[i].strength + 1;
+//       survivorArr[i].agililty = survivorArr[i].agililty + 1;
+//       survivorArr[i].intelligence = survivorArr[i].intelligence + 1;
+//     };
+//   };
+//   for(let i = 0; i < survivorArr.length; i++)
+//   if(survivorArr[i].health <=0) {
+//     survivorArr.splice(i, 1);
+//   }
+// };
 
 
 // generate survivors
 survivor.on('connect', () => {
-  generateSurvivors(2);
+  generateSurvivors(Chance.natural({ min: 5, max: 20}));
   survivor.emit("waitingOnFeedback", survivorArr, console.log('Survivors connected and waiting on CatCorp'));
 });
 
-survivor.on('catastrophe', (survivor) => {
-  // survivor.join('Panic Room');
-  console.log('---> catastrophe hits survivors', survivor, damage)
-  let status = takesDamage(survivor, damage);
-  survivor.emit('survivor status', (status));
+survivor.on('modifiedDamageToSurvivors', (catastrophe) => {
+  console.log('---> Survivors prior to skill check', survivorArr);
+  skillCheck(catastrophe);
+  console.log("-----> Skill Check conducted on survivor"),console.log("---> Survivor Array after skill check", survivorArr);
+
+  survivor.emit('survivor status', survivorArr, deceasedArr);
 });
 // survivor.on('', (order) => {
 //   survivor.emit('', (order));
